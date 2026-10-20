@@ -118,18 +118,22 @@ a {
   place-items: center;
 }
 
-.account-button {
-  border: 1px solid #171717;
-  background: transparent;
-  padding: 11px 20px;
-  font-size: 12px;
-  font-weight: 700;
-  transition: 0.3s;
+  .account-button:hover {
+  background: #171717;
+  color: #ffffff;
 }
 
-.account-button:hover {
+.create-account-button {
   background: #171717;
-  color: white;
+  color: #ffffff;
+  border: 1px solid #171717;
+  margin-right: 8px;
+}
+
+.create-account-button:hover {
+  background: #b99a64;
+  border-color: #b99a64;
+  color: #ffffff;
 }
 
 .mobile-menu-button {
@@ -807,41 +811,61 @@ a {
 
 @media (max-width: 768px) {
   .nav-container {
-    padding: 0 20px;
-    height: 70px;
-  }
+  padding: 0 16px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
 
   .mobile-menu-button {
-    display: block;
-    background: none;
-    border: none;
-    font-size: 24px;
-  }
+  display: block;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  color: #111;
+  flex-shrink: 0;
+}
 
   .logo {
     font-size: 23px;
   }
 
   .nav-links {
-    display: none;
-    position: absolute;
-    top: 70px;
-    left: 0;
-    right: 0;
-    background: white;
-    flex-direction: column;
-    padding: 25px;
-    gap: 22px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.07);
-  }
+  display: none;
+  position: absolute;
+  top: 70px;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: #fff;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px 20px;
+  gap: 22px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+  border-top: 1px solid #eee;
+}
 
-  .nav-links.active {
-    display: flex;
-  }
+.nav-links.active {
+  display: flex;
+}
 
   .nav-actions {
-    gap: 13px;
-  }
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.nav-actions .icon-button {
+  position: relative;
+  flex-shrink: 0;
+  padding: 6px;
+}
 
   .account-button {
     display: none;
@@ -1095,5 +1119,90 @@ a {
 @media (max-width: 500px) {
   .checkout-panel {
     padding: 22px;
+  }
+}
+/* SUDBURY Premium Desktop Account Buttons */
+@media (min-width: 769px) {
+  .nav-actions > .account-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #171717;
+    background: #ffffff;
+    color: #171717;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+  }
+
+  .nav-actions > .create-account-button {
+    background: #171717;
+    color: #ffffff;
+    border-color: #171717;
+  }
+
+  .nav-actions > .create-account-button:hover {
+    background: #b99a64;
+    border-color: #b99a64;
+  }
+
+  .nav-actions > .account-button:not(.create-account-button):hover {
+    background: #171717;
+    color: #ffffff;
+  }
+}
+/* SUDBURY Mobile & Tablet Account Menu */
+
+.mobile-account-menu {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-account-menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+    padding-top: 18px;
+    border-top: 1px solid #eeeeee;
+  }
+
+  .mobile-account-menu button {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #171717;
+    cursor: pointer;
+  }
+
+  .mobile-account-menu button:hover {
+    color: #b99a64;
+  }
+}
+/* Fix: Hide desktop account buttons on mobile */
+
+@media (max-width: 768px) {
+  .nav-actions > .account-button {
+    display: none;
+  }
+}
+/* Mobile Navbar: hide desktop account buttons */
+@media screen and (max-width: 768px) {
+  .header .nav-container .nav-actions > button.account-button {
+    display: none !important;
+  }
+
+  .header .nav-container .nav-links .mobile-account-menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
   }
 }

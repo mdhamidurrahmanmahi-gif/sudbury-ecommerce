@@ -174,8 +174,11 @@ const [ordersError, setOrdersError] = useState("");
                 : ""}
             </span>
             <strong>
-              ৳{Number(order.total_amount || 0).toLocaleString()}
-            </strong>
+  {Number(order.total_amount || 0).toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+  })}
+</strong>
           </div>
         </div>
       ))}

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { supabase } from "./supabase";
 import "./AuthForm.css";
 
-function AuthForm({ onClose, onLoginSuccess }) {
-  const [isLogin, setIsLogin] = useState(true);
+function AuthForm({ onClose, onLoginSuccess, initialMode = "login" }) {
+  const [isLogin, setIsLogin] = useState(initialMode === "login");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

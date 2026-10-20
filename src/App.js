@@ -31,8 +31,10 @@ function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
   const [accountOpen, setAccountOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutAfterLogin, setCheckoutAfterLogin] = useState(false);
 const [currentUser, setCurrentUser] = useState(null); 
 const [products, setProducts] = useState([]);
 const [productsLoading, setProductsLoading] = useState(true);
@@ -319,9 +321,21 @@ const decreaseQuantity = (id) => {
        <ConnectionTest />
        {authOpen && (
   <AuthForm
-    onClose={() => setAuthOpen(false)}
-    onLoginSuccess={(user) => setCurrentUser(user)}
-  />
+  initialMode={authMode}
+  onClose={() => {
+    setAuthOpen(false);
+    setCheckoutAfterLogin(false);
+  }}
+  onLoginSuccess={(user) => {
+    setCurrentUser(user);
+    setAuthOpen(false);
+
+    if (checkoutAfterLogin) {
+      setCheckoutOpen(true);
+      setCheckoutAfterLogin(false);
+    }
+  }}
+/>
 )}
 {accountOpen && currentUser && (
   <MyAccount
@@ -388,7 +402,59 @@ const decreaseQuantity = (id) => {
             <a href="#about" onClick={() => setMenuOpen(false)}>
               About
             </a>
-          </nav>
+          
+          <div className="mobile-account-menu">
+  {currentUser ? (
+    <>
+      <button
+        onClick={() => {
+          setAccountOpen(true);
+          setMenuOpen(false);
+        }}
+      >
+        My Account
+      </button>
+
+      <button
+        onClick={async () => {
+          const { error } = await supabase.auth.signOut();
+
+          if (error) {
+            alert("Sign Out failed. Please try again.");
+          } else {
+            setCurrentUser(null);
+            setMenuOpen(false);
+          }
+        }}
+      >
+        Sign Out
+      </button>
+    </>
+  ) : (
+    <>
+      <button
+        onClick={() => {
+          setAuthMode("signup");
+          setAuthOpen(true);
+          setMenuOpen(false);
+        }}
+      >
+        Create Account
+      </button>
+
+      <button
+        onClick={() => {
+          setAuthMode("login");
+          setAuthOpen(true);
+          setMenuOpen(false);
+        }}
+      >
+        Sign In
+      </button>
+    </>
+  )}
+</div>
+</nav> 
 
           <div className="nav-actions">
             <button
@@ -422,7 +488,7 @@ const decreaseQuantity = (id) => {
             {currentUser ? (
               <>
   <button
-    className="account-button"
+    className="account-button create-account-button"
     onClick={async () => {
       const { error } = await supabase.auth.signOut();
 
@@ -435,7 +501,7 @@ const decreaseQuantity = (id) => {
       }
     }}
   >
-        Logout
+        Sign Out
   </button>
 
   <button
@@ -446,12 +512,29 @@ const decreaseQuantity = (id) => {
   </button>
   </>
 ) : (
+ <>
+  <button
+    className="account-button create-account-button"
+    onClick={() => {
+      setAuthMode("signup");
+      setAuthOpen(true);
+      setMenuOpen(false);
+    }}
+  >
+    Create Account
+  </button>
+
   <button
     className="account-button"
-    onClick={() => setAuthOpen(true)}
+    onClick={() => {
+      setAuthMode("login");
+      setAuthOpen(true);
+      setMenuOpen(false);
+    }}
   >
     Sign In
   </button>
+</>
 )}
           </div>
         </div>
@@ -828,10 +911,19 @@ const decreaseQuantity = (id) => {
 
                 <button
   className="checkout-button"
-  onClick={() => setCheckoutOpen(true)}
+  onClick={() => {
+    if (currentUser) {
+      setCheckoutAfterLogin(false);
+      setCheckoutOpen(true);
+    } else {
+      setCheckoutAfterLogin(true);
+      setCartOpen(false);
+      setAuthOpen(true);
+    }
+  }}
 >
-                  Proceed to Checkout →
-                </button>
+  Proceed to Checkout →
+</button>
 
                 <p>Shipping calculated at checkout.</p>
               </div>
