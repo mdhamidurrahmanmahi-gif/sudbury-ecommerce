@@ -78,7 +78,7 @@ function AuthForm({ onClose, onLoginSuccess, initialMode = "login" }) {
           if (onClose) onClose();
         } else {
           setMessage(
-            "Registration successful! Please check your email to confirm your account before logging in."
+            "Registration successful! Please check your email to confirm your account before signing in."
           );
         }
       }
