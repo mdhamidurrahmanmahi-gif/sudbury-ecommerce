@@ -59,11 +59,12 @@ function AuthForm({ onClose, onLoginSuccess, initialMode = "login" }) {
           await supabase.auth.signUp({
             email: cleanEmail,
             password,
-            options: {
-              data: {
-                full_name: fullName.trim(),
-              },
-            },
+           options: {
+  emailRedirectTo: "https://sudbury-ecommerce.vercel.app/",
+  data: {
+    full_name: fullName.trim(), 
+  },
+},
           });
 
         if (authError) throw authError;

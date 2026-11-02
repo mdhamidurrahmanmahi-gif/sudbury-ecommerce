@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Shop from './pages/Shop';
+import { useLocation } from 'react-router-dom';
 import ConnectionTest from "./ConnectionTest";
 import AuthForm from "./AuthForm";
 import MyAccount from "./MyAccount";
@@ -17,6 +19,7 @@ const categories = [
 ];
 
 function App() {
+  const location = useLocation();
   const [selectedCategory, setSelectedCategory] = useState("All Products");
   const [search, setSearch] = useState("");
   const [cart, setCart] = useState(() => {
@@ -67,8 +70,8 @@ useEffect(() => {
   }
 
   loadWishlist();
-
-  return () => {
+  return(
+ ) => {
     active = false;
   };
 }, [currentUser?.id]);
@@ -107,7 +110,7 @@ useEffect(() => {
 
   return () => {
     active = false;
-  };
+  }
 }, []);
 useEffect(() => {
   let mounted = true;
@@ -315,6 +318,41 @@ const decreaseQuantity = (id) => {
     setPlacingOrder(false);
   }
 };
+if (location.pathname === "/shop") {
+  return (
+    <Shop
+      products={filteredProducts}
+      selectedCategory={selectedCategory}
+setSelectedCategory={setSelectedCategory}
+      productsLoading={productsLoading}
+      productsError={productsError}
+      addToCart={addToCart}
+      wishlist={wishlist}
+      toggleWishlist={toggleWishlist}
+      cart={cart}
+      cartCount={cartCount}
+      cartTotal={cartTotal}
+      cartOpen={cartOpen}
+      setCartOpen={setCartOpen}
+      increaseQuantity={increaseQuantity}
+      decreaseQuantity={decreaseQuantity}
+      removeFromCart={removeFromCart}
+      currentUser={currentUser}
+            accountOpen={accountOpen}
+      setAccountOpen={setAccountOpen}
+      authOpen={authOpen}
+authMode={authMode}
+setCurrentUser={setCurrentUser}
+checkoutOpen={checkoutOpen}
+checkoutAfterLogin={checkoutAfterLogin}
+setCheckoutOpen={setCheckoutOpen}
+setCheckoutAfterLogin={setCheckoutAfterLogin}
+setAuthOpen={setAuthOpen}
+handlePlaceOrder={handlePlaceOrder}
+placingOrder={placingOrder}
+    />
+  );
+}
 
   return (
     <div className="website">
@@ -390,16 +428,16 @@ const decreaseQuantity = (id) => {
           </a>
 
           <nav className={menuOpen ? "nav-links active" : "nav-links"}>
-            <a href="#home" onClick={() => setMenuOpen(false)}>
-              Home
-            </a>
-            <a href="#shop" onClick={() => setMenuOpen(false)}>
-              Shop
-            </a>
-            <a href="#categories" onClick={() => setMenuOpen(false)}>
-              Categories
-            </a>
-            <a href="#about" onClick={() => setMenuOpen(false)}>
+           <a href="/" onClick={() => setMenuOpen(false)}>
+  Home
+</a>
+           <a href="/shop" onClick={() => setMenuOpen(false)}>
+  Shop
+</a>
+            <a href="/#categories" onClick={() => setMenuOpen(false)}>
+  Categories
+</a>
+            <a href="/#about" onClick={() => setMenuOpen(false)}>
               About
             </a>
           
