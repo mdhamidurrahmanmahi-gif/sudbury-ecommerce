@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AuthForm from "../AuthForm";
 import MyAccount from "../MyAccount";
 import { supabase } from "../supabase";
@@ -28,6 +29,7 @@ setSelectedCategory,
   setCheckoutAfterLogin,
   setAuthOpen,
   handlePlaceOrder,
+  setCheckoutItems,
   placingOrder,
   authOpen,
   authMode,
@@ -36,6 +38,7 @@ setSelectedCategory,
 
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const navigate = useNavigate();
   return (
     <div className="website">
       {checkoutOpen && currentUser && (
@@ -210,9 +213,11 @@ setMenuOpen(false);
   className="checkout-button"
   onClick={() => {
     if (currentUser) {
-      setCheckoutAfterLogin(false);
-      setCheckoutOpen(true);
-    } else {
+  setCheckoutItems(null);
+  setCheckoutAfterLogin(false);
+  setCheckoutOpen(true);
+}
+    else {
       setCheckoutAfterLogin(true);
       setCartOpen(false);
       setAuthOpen(true);
@@ -247,7 +252,12 @@ setMenuOpen(false);
             products.map((product) => (
               <div className="product-card" key={product.id}>
                 <div className="product-image">
-                  <img src={product.image} alt={product.name} />
+                  <img
+  src={product.image}
+  alt={product.name}
+  onClick={() => navigate(`/product/${product.id}`)}
+  style={{ cursor: "pointer" }}
+/>
 
                   <span className="product-badge">
                     {product.badge}
@@ -266,7 +276,12 @@ setMenuOpen(false);
                 </div>
 
                 <div className="product-info">
-                  <h3>{product.name}</h3>
+                  <h3
+  onClick={() => navigate(`/product/${product.id}`)}
+  style={{ cursor: "pointer" }}
+>
+  {product.name}
+</h3>
 
                  <p className="product-price">
   ${Number(product.price).toFixed(2)}

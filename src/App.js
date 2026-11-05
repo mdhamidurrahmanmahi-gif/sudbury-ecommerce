@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Shop from './pages/Shop';
+import ProductDetails from "./pages/ProductDetails";
 import { useLocation } from 'react-router-dom';
 import ConnectionTest from "./ConnectionTest";
 import AuthForm from "./AuthForm";
@@ -37,6 +38,7 @@ function App() {
   const [authMode, setAuthMode] = useState("login");
   const [accountOpen, setAccountOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutItems, setCheckoutItems] = useState(null);
   const [checkoutAfterLogin, setCheckoutAfterLogin] = useState(false);
 const [currentUser, setCurrentUser] = useState(null); 
 const [products, setProducts] = useState([]);
@@ -160,6 +162,7 @@ useEffect(() => {
 }); 
 
   const addToCart = (product) => {
+    
     setCart((previousCart) => {
       const existingProduct = previousCart.find(
         (item) => item.id === product.id
@@ -176,7 +179,17 @@ useEffect(() => {
       return [...previousCart, { ...product, quantity: 1 }];
     });
   };
+   const handleBuyNow = (product) => {
+  setCheckoutItems([{ ...product, quantity: 1 }]);
 
+  if (currentUser) {
+    setCheckoutAfterLogin(false);
+    setCheckoutOpen(true);
+  } else {
+    setCheckoutAfterLogin(true);
+    setAuthOpen(true);
+  }
+};
   const removeFromCart = (id) => {
     setCart((previousCart) =>
       previousCart.filter((item) => item.id !== id)
@@ -260,10 +273,12 @@ const decreaseQuantity = (id) => {
   const handlePlaceOrder = async (event) => {
   event.preventDefault();
 
-  if (!currentUser || cart.length === 0) {
-    alert("Please sign in and add products to your cart.");
-    return;
-  }
+  const itemsToOrder = checkoutItems ?? cart;
+
+if (!currentUser || itemsToOrder.length === 0) {
+  alert("Please sign in and select products to order.");
+  return;
+}
 
   setPlacingOrder(true);
 
@@ -283,7 +298,10 @@ const decreaseQuantity = (id) => {
         email: currentUser.email,
         phone: phone,
         shipping_address: address,
-        total_amount: cartTotal,
+        total_amount: itemsToOrder.reduce(
+  (total, item) => total + item.price * item.quantity,
+  0
+),
         payment_method: "cod",
         payment_status: "unpaid",
         order_status: "pending",
@@ -293,7 +311,7 @@ const decreaseQuantity = (id) => {
 
     if (orderError) throw orderError;
 
-    const orderItems = cart.map((item) => ({
+    const orderItems = itemsToOrder.map((item) => ({
       order_id: order.id,
       product_id: item.id,
       product_name: item.name,
@@ -309,7 +327,12 @@ const decreaseQuantity = (id) => {
 
     alert("Order placed successfully!");
 
-    setCart([]);
+    if (!checkoutItems) {
+  setCart([]);
+}
+
+setCheckoutItems(null);
+setCheckoutOpen(false);
     setCheckoutOpen(false);
   } catch (error) {
     console.error("Order Error:", error);
@@ -318,7 +341,14 @@ const decreaseQuantity = (id) => {
     setPlacingOrder(false);
   }
 };
-if (location.pathname === "/shop") {
+const productMatch = location.pathname.match(/^\/product\/(\d+)$/);
+
+const selectedProduct = productMatch
+  ? products.find(
+      (product) => String(product.id) === productMatch[1]
+    )
+  : null; 
+if (location.pathname === "/shop") {  
   return (
     <Shop
       products={filteredProducts}
@@ -346,6 +376,7 @@ setCurrentUser={setCurrentUser}
 checkoutOpen={checkoutOpen}
 checkoutAfterLogin={checkoutAfterLogin}
 setCheckoutOpen={setCheckoutOpen}
+setCheckoutItems={setCheckoutItems}
 setCheckoutAfterLogin={setCheckoutAfterLogin}
 setAuthOpen={setAuthOpen}
 handlePlaceOrder={handlePlaceOrder}
@@ -353,7 +384,54 @@ placingOrder={placingOrder}
     />
   );
 }
+if (productMatch) {
+  if (productsLoading) {
+  return (
+    <div className="website">
+      <h2>Loading product...</h2>
+    </div>
+  );
+}
+  if (!selectedProduct) {
+    return (
+      <div className="website">
+        <h2>Product not found.</h2>
+      </div>
+    );
+  }
 
+  return (
+   <ProductDetails
+  product={selectedProduct}
+  productsLoading={productsLoading}
+  addToCart={addToCart}
+  handleBuyNow={handleBuyNow}
+  checkoutItems={checkoutItems}
+  setCheckoutItems={setCheckoutItems}
+  wishlist={wishlist}
+  toggleWishlist={toggleWishlist}
+  cart={cart}
+  cartCount={cartCount}
+  cartTotal={cartTotal}
+  cartOpen={cartOpen}
+  setCartOpen={setCartOpen}
+  increaseQuantity={increaseQuantity}
+  decreaseQuantity={decreaseQuantity}
+  removeFromCart={removeFromCart}
+  currentUser={currentUser}
+  setCheckoutOpen={setCheckoutOpen}
+  setCheckoutAfterLogin={setCheckoutAfterLogin}
+  setAuthOpen={setAuthOpen}
+  checkoutOpen={checkoutOpen}
+handlePlaceOrder={handlePlaceOrder}
+placingOrder={placingOrder}
+authOpen={authOpen}
+authMode={authMode}
+setCurrentUser={setCurrentUser}
+checkoutAfterLogin={checkoutAfterLogin}
+/>
+  );
+}
   return (
     <div className="website">
        <ConnectionTest />
